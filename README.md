@@ -5,8 +5,8 @@
 - Bulletpoint
 	- Subbulletpoint
 
-- 1 Numerical list 1
-- 2 Numerical list 2
+1. Numerical list 1
+2. Numerical list 2
 
 - [ ] Open check
 - [x] Checked 
