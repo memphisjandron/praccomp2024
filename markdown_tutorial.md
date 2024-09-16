@@ -39,3 +39,9 @@ Ordered
 3. Item 3
 	* Item 3a
 	* Item 3b
+
+## IMAGES
+
+! [Danio rerio](https://cdn.britannica.com/96/219196-050-9DD604F0/Zebra-Fish-Danio-Zebrafish.jpg)
+
+Format: \![Alt text](url)
