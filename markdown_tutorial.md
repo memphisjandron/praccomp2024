@@ -92,4 +92,4 @@ Content column 1 | Content column 2
 
 ## Emoji
 
-:upside-down face:
+:shipit:
