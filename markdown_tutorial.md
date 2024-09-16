@@ -42,6 +42,6 @@ Ordered
 
 ## IMAGES
 
-! [Danio rerio](https://cdn.britannica.com/96/219196-050-9DD604F0/Zebra-Fish-Danio-Zebrafish.jpg)
+![Danio rerio](https://cdn.britannica.com/96/219196-050-9DD604F0/Zebra-Fish-Danio-Zebrafish.jpg)
 
 Format: \!\[Alt text]\(url\)
