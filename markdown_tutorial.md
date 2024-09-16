@@ -45,3 +45,13 @@ Ordered
 ![Danio rerio](https://cdn.britannica.com/96/219196-050-9DD604F0/Zebra-Fish-Danio-Zebrafish.jpg)
 
 Format: \!\[Alt text]\(url\)
+
+## LINKS
+
+https://www.linkedin.com/in/memphis-jandron-54a597166/
+
+[LinkedIn](https://www.linkedin.com/in/memphis-jandron-54a597166/)
+
+## BACKSLASH ESCAPES
+
+\*Literal asterisks\*
