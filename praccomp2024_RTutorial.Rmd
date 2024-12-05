@@ -1,0 +1,1308 @@
+# BIOL 4800/6220 Fall 2024 R Tutorial
+
+## Practical Computing Fall 2024
+
+```{r}
+setwd("~/praccomp2024/")
+```
+
+### R Basics
+
+#### Introduction
+
+* R as a calculator
+
+```{r}
+1 + 100
+```
+
+```{r}
+2^3
+```
+
+```{r}
+7/2
+```
+
+```{r}
+4-1
+```
+
+```{r}
+2*3
+```
+
+```{r}
+3+5*2
+```
+
+```{r}
+(3+5)*2
+```
+
+```{r}
+2e3
+```
+
+```{r}
+2/10000
+```
+
+```{r}
+log(1)
+```
+
+```{r}
+exp(1)
+```
+
+* Boolean Conditionals
+
+```{r}
+1 == 1
+```
+
+```{r}
+2 == 1
+```
+
+```{r}
+2 > 1
+```
+
+```{r}
+2 <= 1
+```
+
+```{r}
+1 != 2
+```
+
+* Variables
+
+```{r}
+x <- 10
+x
+```
+
+```{r}
+x + x
+```
+
+```{r}
+x - 5
+```
+
+```{r}
+y <- x^x
+```
+
+```{r}
+y
+```
+
+* Vectorization
+
+```{r}
+1:5
+```
+
+```{r}
+2^(1:5)
+```
+
+```{r}
+v <- 1:5
+```
+
+```{r}
+2^v
+```
+
+```{r}
+log(v)
+```
+
+* Environment
+
+```{r}
+ls()
+```
+
+```{r}
+rm(v)
+```
+
+```{r}
+ls()
+```
+
+#### Package Managment
+
+```{r}
+#installed.packages()
+```
+
+```{r}
+#install.packages("vegan", dependencies = TRUE)
+#library(vegan)
+```
+
+```{r}
+#if (!require("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+
+#BiocManager::install("DESeq2")
+```
+
+```{r}
+#library(DESeq2)
+```
+
+#### Getting Help
+
+**Search the web**
+
+```{r}
+?plot
+```
+
+```{r}
+help(plot)
+```
+
+```{r}
+vignette("FAQ-vegan")
+```
+
+```{r}
+citation("vegan")
+```
+
+#### Data and their formats
+
+```{r}
+cats <- data.frame(coat = c("calico", "black", "tabby"),
+                   weight = c(2.1, 5, 3.2),
+                   likes.string = c(TRUE, FALSE, TRUE))
+```
+
+```{r}
+cats
+```
+
+```{r}
+getwd()
+```
+
+```{r}
+write.csv(cats, "cats.csv")
+```
+
+```{r}
+cats <- read.csv("cats.csv", header=TRUE, row.names = 1)
+```
+
+```{r}
+cats
+```
+
+```{r}
+cats$weight
+```
+
+```{r}
+cats[, 2]
+```
+
+```{r}
+cats[, "weight"]
+```
+
+```{r}
+cats[c(1,3),c(2:3,1)]
+```
+
+```{r}
+(cats.log.weight <- log(cats$weight))
+```
+
+```{r}
+cbind(cats,cats.log.weight)
+```
+
+```{r}
+(cats2 <- cbind(cats,cats.log.weight))
+```
+
+```{r}
+cats2
+```
+
+```{r}
+paste("My cat is ", cats$coat, ", and it weighs ", cats$weight, "kg.", sep = "")
+```
+
+##### Data Types
+
+```{r}
+typeof(cats)
+```
+
+```{r}
+class(cats)
+```
+
+```{r}
+typeof(cats$coat)
+typeof(cats$weight)
+typeof(cats$likes.string)
+```
+
+```{r}
+typeof(1i)
+```
+
+```{r}
+likes.pop <- c(1,0,1,1,0)
+
+typeof(likes.pop)
+```
+
+```{r}
+as.logical(likes.pop)
+```
+
+```{r}
+names <- c("Iggy", "Bitey", "Garfield")
+
+cats$names <- names
+
+cats
+```
+
+```{r}
+names2 <- c(names, "Spike")
+```
+
+```{r}
+names3 <- c("Fluffy", names)
+```
+
+```{r}
+1:10
+```
+
+```{r}
+(z <- seq(20, 150, by=0.5))
+```
+
+```{r}
+length(z)
+```
+
+```{r}
+length(cats)
+```
+
+```{r}
+length(cats$coat)
+```
+
+```{r}
+dim(cats)
+```
+
+```{r}
+typeof(z)
+```
+
+```{r}
+class(z)
+```
+
+```{r}
+head(z, n=20)
+```
+
+```{r}
+tail(z, n=40)
+```
+
+```{r}
+sort(z, decreasing = TRUE)
+```
+
+```{r}
+unique(z)
+```
+
+##### Data Frames
+
+```{r}
+cats
+```
+
+```{r}
+cats$weight
+
+typeof(cats$weight)
+```
+
+```{r}
+str(cats$weight)
+```
+
+```{r}
+coats <- c("tabby", "tortoiseshell", "tortoiseshell", "black", "tabby")
+```
+
+```{r}
+(categories <- factor(coats))
+```
+
+```{r}
+class(categories)
+```
+
+```{r}
+str(categories)
+```
+
+##### Lists
+
+```{r}
+(list.example <- list(title="Numbers", numbers = seq(1,20,by=5), data=TRUE))
+```
+
+```{r}
+list.example$title
+```
+
+```{r}
+data.frame(list.example)
+```
+
+##### Matricies
+
+```{r}
+(matrix.example <- matrix(0, nrow = 3, ncol = 5, ))
+```
+
+```{r}
+class(matrix.example)
+```
+
+```{r}
+typeof(matrix.example)
+```
+
+```{r}
+dim(matrix.example)
+```
+
+```{r}
+nrow(matrix.example)
+ncol(matrix.example)
+```
+
+```{r}
+data.frame(matrix.example)
+```
+
+##### Subsetting
+
+```{r}
+(p <- c(2.3,6.9,4.0,23,1))
+```
+
+```{r}
+names(p) <- c("a", "b", "c", "d", "e")
+p
+```
+
+```{r}
+typeof(p)
+class(p)
+```
+
+```{r}
+p[1]
+```
+
+```{r}
+p[2:4]
+```
+
+```{r}
+p[c(1,5)]
+```
+
+```{r}
+p[c(1,1,1,3,5,5)]
+```
+
+```{r}
+p[6]
+```
+
+```{r}
+(q <- p[-3])
+```
+
+```{r}
+p[-(2:4)]
+```
+
+```{r}
+p[c("a", "e")]
+```
+
+```{r}
+p[c(T,F,T,F,T)]
+```
+
+##### Factors
+
+```{r}
+(f <- factor(c("a", "b", "c", "d", "e")))
+```
+
+```{r}
+f[f == "a"]
+```
+
+```{r}
+f[1:3]
+```
+
+```{r}
+(f2 <- factor(c("a", "a", "b", "c", "c")))
+```
+
+```{r}
+f2[f2 == "a"]
+```
+
+```{r}
+f2[f2 %in% c("a", "c")]
+```
+
+##### Matricies Revisted
+
+```{r}
+set.seed(2525)
+
+m <- matrix(rnorm(6,4,0.3), nrow=6, ncol=4)
+m
+```
+
+```{r}
+hist(rnorm(10000,4,0.3))
+```
+
+```{r}
+m[3:4, c(3,1)]
+```
+
+##### Lists Revisted
+
+```{r}
+xlist <- list(a="BIOL48006220", b=rnorm(16,75,10), data="Grade")
+xlist
+```
+
+##### Data Frames Revisted
+
+```{r}
+(gp <- read.csv("data/forest_area_sq_km.csv"))
+```
+
+```{r}
+head(gp, n=10)
+```
+
+```{r}
+head(gp[4], n=3L)
+```
+
+```{r}
+nrow(gp)
+```
+
+```{r}
+head(gp[["country"]], 10L)
+```
+```{r}
+gp[c(1,3), c(1, 5:10)]
+```
+
+```{r}
+gp[ which(gp$X1989 <= 100 & gp$X2019 >= 100), ]
+```
+
+#### Conditionals and Flow
+
+```{r}
+n <- 1
+
+if (n < 10) {
+  print("n is less than 10.")
+} else if (n > 10) {
+  print("n is greater than 10.")
+} else {
+  print("n is equal to 10")
+}
+```
+
+```{r}
+for (n in seq(0,20)) {
+  if (n < 10) {
+    print("n is less than 10.")
+}   else if (n > 10) {
+    print("n is greater than 10.")
+}   else {
+    print("n is equal to 10")
+}
+}
+
+```
+
+```{r}
+for (n in rnorm(20,10,3)) {
+  if (n < 10) {
+    print(paste0(n," is less than 10."))
+}   else if (n > 10) {
+    print(paste0(n," is greater than 10."))
+}   else {
+    print(paste0(n," is equal to 10"))
+}
+}
+```
+
+```{r}
+g <- 0
+
+while(g <= 10) {
+  print(paste0(g, " is less than or equal to 10."))
+  g <- g+1
+}
+```
+
+#### Plotting and Figures
+
+```{r}
+gap <- read.csv("data/gapminder_all.csv")
+
+gap
+```
+
+```{r}
+plot(gap$gdpPercap_1997 ~ gap$pop_1997)
+```
+
+```{r}
+#install.packages("ggplot2", dependencies = TRUE)
+
+library(ggplot2)
+```
+
+```{r}
+ggplot(data=gap, mapping=aes(y=gdpPercap_1997, x=pop_1997)) + geom_point()
+```
+
+```{r}
+gapminder <- read.csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
+
+gapminder
+```
+
+```{r}
+ggplot(data=gapminder, mapping=aes(x=gdpPercap, y=lifeExp)) + geom_point(aes(color=continent))
+```
+
+```{r}
+ggplot(data=gapminder, mapping=aes(x=gdpPercap, y=lifeExp)) + geom_point(aes(color=continent), alpha=0.25) + scale_x_log10() +
+  geom_smooth(method=lm, color="black", fill="grey") + theme_classic()
+```
+
+```{r}
+ggplot(data=gapminder, mapping=aes(x=year, y=lifeExp, by=country)) + geom_line(mapping=aes(color=continent)) + geom_point() + theme_classic()
+```
+
+```{r}
+ggplot(data=gapminder, mapping=aes(x=gdpPercap, y=lifeExp)) + geom_point(color="darkblue", alpha=0.25, size=1) + scale_x_log10() +
+  geom_smooth(method=lm, color="deeppink", fill="chartreuse", size=0.5) + theme_classic()
+```
+
+```{r}
+ggplot(data=gapminder, mapping=aes(x=gdpPercap, y=lifeExp)) + geom_point(color="darkblue", alpha=0.25, size=1) +
+  geom_smooth(method=loess, color="deeppink", fill="chartreuse", size=0.5) + theme_classic()
+```
+
+```{r}
+unique(gapminder$continent)
+```
+
+```{r}
+americas <- gapminder[gapminder$continent == "Americas", ]
+```
+
+```{r}
+ggplot(data=americas, mapping = aes(x=year, y=lifeExp)) + 
+  labs(
+    x = "Year",
+    y = "Life Expectancy (years)",
+    title = "Life expectancy over time in the Americas"
+  ) +
+  geom_line(color="darkblue") + 
+  facet_wrap( ~ country) +
+  theme(axis.text.x = element_text(angle=90))
+```
+
+```{r}
+ggsave("data/AmericasLifeExp.png")
+```
+
+```{r}
+write.csv(americas, file ="data/americas.csv")
+write.table(gapminder, file ="data/gapminder_web_20240930.csv", sep=",")
+```
+
+###### Fancy Plots
+
+```{r}
+#install.packages(c("ggridges", "viridis", "hrbrthemes"), dependencies=TRUE)
+```
+
+```{r}
+library(ggridges)
+library(viridis)
+library(hrbrthemes)
+```
+
+```{r}
+ggplot(lincoln_weather, aes(x = `Mean Temperature [F]`, y = `Month`, fill = after_stat(x))) +
+  labs(title="Temperature in Lincoln, NE in 2016") +
+  geom_density_ridges_gradient(scale = 3, rel_min_height=0.01) +
+  scale_fill_viridis_c(name = "Temp. [F]", option = "C") +
+  theme_ipsum()
+```
+
+```{r}
+#install.packages(c("ggstatsplot", "tidyverse", "palmerpenguins"))
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+data("penguins", package = "palmerpenguins")
+penguins
+```
+
+```{r}
+(penguins2 <- drop_na(penguins))
+```
+
+```{r}
+ggplot(penguins2, aes(x=`bill_length_mm`, y=`bill_depth_mm`)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+```{r}
+ggplot(penguins2, aes(x=`bill_length_mm`, y=`bill_depth_mm`, color=`species`)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+```{r}
+library(ggstatsplot)
+
+plt <- ggbetweenstats(
+  data=penguins2,
+  x=species,
+  y=bill_length_mm
+)
+
+plt
+```
+
+```{r}
+library(ggridges)
+library(ggplot2)
+library(viridis)
+
+spider_data <- read.csv("data/spider_data_20221101.csv")
+spider_data
+```
+
+```{r}
+library(tidyverse)
+
+spider_data %>% 
+  arrange(year) %>%
+  mutate(name=factor(family, levels=unique(family))) %>% 
+  ggplot(aes(x = `year`, y = `family`, color = `family`, fill = `family`)) + 
+  geom_density_ridges(alpha = 0.5, stat = "binline", bin = 25) +
+  theme(
+    legend.position = "none",
+    strip.text.x = element_text(size = 5)
+  )
+```
+
+```{r}
+head(penguins2)
+```
+
+```{r}
+penguins3 <- with(penguins2, cbind(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g))
+```
+
+```{r}
+penguin_pca <- princomp(penguins3)
+summary(penguin_pca)
+```
+
+```{r}
+loadings(penguin_pca)
+```
+
+```{r}
+biplot(penguin_pca)
+```
+
+```{r}
+#install.packages("devtools")
+library(devtools)
+
+#install_github("vqv/ggbiplot")
+library(ggbiplot)
+
+ggbiplot(penguin_pca, 
+         groups = penguins2$species, ellipse = TRUE, scale. = TRUE) +
+  scale_color_discrete(name = "")
+```
+
+```{r}
+# Get data:
+#install.packages("gapminder")
+#install.packages("gganimate")
+#install.packages("gifski")
+library(gapminder)
+ 
+# Charge libraries:
+library(ggplot2)
+library(gganimate)
+library(gifski)
+ 
+# Make a ggplot, but add frame=year: one image per year
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+# Save at gif:
+anim_save("data/271-ggplot2-animated-gif-chart-with-gganimate2.gif"
+renderer = gifski_renderer())
+```
+
+### Statistics
+
+```{r}
+rand <- rnorm(50, 30, 8)
+rand
+```
+
+```{r}
+sum(rand)
+```
+
+```{r}
+sum(rand)/length(rand)
+```
+
+```{r}
+mean(rand)
+```
+
+```{r}
+sort(rand)
+```
+
+```{r}
+min(rand)
+max(rand)
+```
+
+```{r}
+cumsum(rand)
+```
+
+```{r}
+diff(rand)
+```
+
+```{r}
+sqrt(rand)
+```
+
+```{r}
+log(rand)
+```
+
+```{r}
+#things <- scan()
+```
+
+```{r}
+things
+```
+
+#### Analyses
+
+##### Univariate Statistics
+
+1. Categorical Data
+  - Barplots
+  
+```{r}
+beer <- c(3,4,1,1,3,4,3,3,1,3,2,1,2,1,2,3,2,3,1,1,1,1,4,3,1)
+length(beer)
+
+table(beer)
+```
+
+```{r}
+barplot(table(beer), xlab="Beer", ylab="Frequency", col="blue")
+```
+
+```{r}
+barplot(table(beer)/length(beer), xlab="Beer", ylab="Frequency", col="blue")
+```
+
+```{r}
+pie(table(beer), main = "Beer preference by students (n=25)")
+```
+
+2. Numerical data
+
+```{r}
+rand
+stem(rand)
+```
+
+```{r}
+stripchart(rand)
+```
+
+3. Measures of center
+
+```{r}
+mean(rand)
+```
+
+```{r}
+median(rand)
+```
+
+```{r}
+which(table(rand) == max(table(rand)))
+```
+
+4. Variation
+
+  - Range
+  
+```{r}
+range(rand)
+```
+
+  - Variance
+  
+```{r}
+var(rand)
+```
+
+```{r}
+sd(rand)
+```
+
+  -IQR
+
+```{r}
+IQR(rand)
+```
+
+  - z-scores
+  
+```{r}
+scale(rand)
+```
+
+  - Summary
+  
+```{r}
+summary(rand)
+```
+
+5. Plots 
+
+  - Histograms
+  
+```{r}
+hist(rand, breaks = 15, prob = TRUE)
+```
+
+  - Box plots
+  
+```{r}
+boxplot(rand)
+```
+
+```{r}
+#install.packages("vioplot")
+library(vioplot)
+
+vioplot(rand, col = "orange")
+```
+
+```{r}
+vioplot(gapminder$lifeExp~gapminder$continent, col = "forestgreen")
+```
+
+###### Bivariate and multivariate statistics
+
+  - Plotting and regression
+    - Box plotting
+    
+```{r}
+boxplot(gapminder$lifeExp~gapminder$continent, col = "sienna")
+```
+
+
+```{r}
+vioplot(gapminder$lifeExp~gapminder$continent, col = "forestgreen")
+```
+
+```{r}
+summary(rand)
+
+t.test(rand, mu = 30)
+```
+
+```{r}
+(spid.gen <- read.csv("data/spider_genitalia.csv", header = TRUE))
+```
+
+```{r}
+vioplot(spid.gen$left.bulb/spid.gen$carapace.length~spid.gen$habitat)
+```
+
+```{r}
+plot(spid.gen$left.bulb~spid.gen$right.bulb)
+bulb.reg <- lm(spid.gen$left.bulb~spid.gen$right.bulb)
+abline(bulb.reg)
+```
+
+```{r}
+summary(bulb.reg)
+```
+
+```{r}
+sqrt(0.5115)
+```
+
+```{r}
+cor(spid.gen$left.bulb, spid.gen$right.bulb, method = "spearman")
+```
+
+```{r}
+t.test(spid.gen$left.bulb/spid.gen$carapace.length~spid.gen$habitat)
+```
+
+```{r}
+wilcox.test(spid.gen$left.bulb/spid.gen$carapace.length~spid.gen$habitat)
+```
+
+```{r}
+ks.test(rand, "pnorm")
+```
+
+```{r}
+shapiro.test(rand)
+```
+
+```{r}
+qqnorm(rand, pch=16, col="red")
+qqline(rand, lty=2, col="darkblue")
+```
+
+```{r}
+summary(lm(spid.gen$left.bulb/spid.gen$carapace.length~spid.gen$habitat))
+```
+
+```{r}
+summary(aov(spid.gen$left.bulb/spid.gen$carapace.length ~ spid.gen$habitat))
+```
+
+```{r}
+habitat <- c("A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "C", "C", "C", "C", "C")
+
+parload <- c(10, 12, 8, 11, 14, 14, 16, 10, 9, 12, 18, 19, 20, 21, 22)
+
+parhab <- cbind(habitat, parload)
+
+parhab <- data.frame(parhab)
+
+parhab$habitat <- as.factor(parhab$habitat)
+parhab$parload <- as.numeric(parhab$parload)
+
+parhab
+```
+
+```{r}
+parhab.aov <- aov(parhab$parload ~ parhab$habitat)
+
+summary(parhab.aov)
+```
+
+```{r}
+(parhab.tukey <- TukeyHSD(parhab.aov))
+```
+
+```{r}
+ggbetweenstats(parhab, x = habitat, y = parload)
+```
+
+```{r}
+(pvals <- c(0.05, 0.005, 0.0005, 0.00005, 0.000005))
+
+p.adjust(pvals, method = "bonferroni")
+
+p.adjust(pvals, method = "fdr")
+```
+
+```{r}
+gapminder.2007 <- gapminder[which(gapminder$year == 2007), ]
+
+gapminder.2007.pop.gdpPercap.lifeExp.contintent <- lm(gapminder.2007$pop ~ gapminder.2007$gdpPercap + gapminder.2007$lifeExp + gapminder.2007$continent)
+
+summary(gapminder.2007.pop.gdpPercap.lifeExp.contintent)
+```
+
+```{r}
+#install.packages("MuMIn", dependencies = TRUE)
+library(MuMIn)
+
+# Example from Burnham and Anderson (2002), page 100:
+
+# prevent fitting sub-models to different datasets
+oop <- options(na.action = "na.fail")
+
+dd <- dredge(gapminder.2007.pop.gdpPercap.lifeExp.contintent)
+subset(dd, delta < 2)
+
+dd
+```
+
+
+```{r}
+# Visualize the model selection table:
+  if(require(graphics)) {
+    par(mar = c(3,4,6,4))
+    plot(dd, labAsExpr = TRUE)
+  }
+```
+
+```{r}
+# Model average models with delta AICc < 2
+model.avg(dd, subset = delta < 2)
+
+#or as a 95% confidence set:
+model.avg(dd, subset = cumsum(weight) <= .95) # get averaged coefficients
+
+#'Best' model
+summary(get.models(dd, 1)[[1]])
+```
+
+### Tidyverse
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+
+head(penguins)
+```
+
+```{r}
+weather <- read.csv("https://pasta.lternet.edu/package/data/eml/knb-lter-pal/28/8/375b34051b162d84516ec2d02f864675")
+```
+
+- Structure
+
+```{r}
+str(penguins)
+```
+
+```{r}
+str(weather)
+```
+
+- Reducing Data to Set Dimensions
+
+```{r}
+colnames(penguins)
+```
+
+```{r}
+Torg_2007_penguins <- penguins %>% select(species, island, year) %>%
+  filter(year == 2007 & island == "Torgersen")
+
+Torg_2007_penguins
+```
+
+```{r}
+is.na(penguins$sex)
+```
+
+```{r}
+summary(penguins %>% filter(!is.na(sex) & body_mass_g >= 5000))
+```
+
+```{r}
+penguins_bill_mass_ratio <- penguins %>% mutate(bill.mass.ratio = bill_length_mm/body_mass_g)
+
+vioplot(penguins_bill_mass_ratio$bill.mass.ratio)
+```
+
+```{r}
+penguins %>% filter(!is.na(body_mass_g)) %>% 
+  mutate(body_size_cat = case_when(
+    body_mass_g >= 5000 ~ "big", 
+    body_mass_g <= 3500 ~ "small",
+    body_mass_g <5000 & body_mass_g >3500 ~ "medium",
+    T ~ "ERROR"
+))
+```
+
+```{r}
+penguins %>% filter(!is.na(body_mass_g)) %>% 
+  mutate(body_size_cat = case_when(
+    body_mass_g >= 5000 ~ "big", 
+    body_mass_g <= 3500 ~ "small",
+    body_mass_g <5000 & body_mass_g >3500 ~ "medium",
+    T ~ "ERROR"
+  )) %>%
+  filter(!is.na(sex)) %>%
+  group_by(species, sex) %>%
+  summarize(mean_body_mass_g = mean(body_mass_g, na.rm=T),
+            sd_body_mass_g = sd(body_mass_g, na.rm=T))
+```
+
+- Manipulating Data
+
+```{r}
+str(weather)
+```
+
+```{r}
+lubridate::yday("2024-10-28")
+```
+
+```{r}
+weather %>% mutate(Date = ymd(Date))
+```
+
+```{r}
+weather %>% mutate(Date = ymd(Date)) %>%
+  mutate(Date = floor_date(Date, unit = 'year')) %>%
+  group_by(Date) %>%
+  summarize(mean(Temperature.Average..C.)) %>%
+  
+  ggplot(aes(x=Date, y=`mean(Temperature.Average..C.)`)) +
+    geom_point(aes(color = year(Date))) +
+    scale_color_viridis_c() +
+    geom_line(color = "grey") +
+    geom_smooth(method = "lm", linewidth = 1, linetype = 1, color = "red2", fill = "orange2")
+```
+
+- Joining Data Frames
+
+```{r}
+colnames(penguins)
+```
+
+```{r}
+colnames(weather)
+```
+
+```{r}
+(weather.sums <- weather %>%
+  group_by(year(Date)) %>%
+  summarize(avg.temp = mean(Temperature.Average..C., na.rm = T),
+            max.temp = mean(Temperature.High..C., na.rm = T),
+            min.temp = mean(Temperature.Low..C., na.rm = T)) %>%
+  rename(year = `year(Date)`) 
+)
+```
+
+```{r}
+(penguins_weather.sums <- left_join(penguins, weather.sums, by = "year"))
+```
+
+```{r}
+penguins_weather.sums %>%
+  filter(!is.na(sex)) %>%
+  
+  ggplot(aes(x=sex, y=body_mass_g, color = sex, fill = sex)) +
+    geom_violin() +
+    scale_color_manual(values = c("orange3", "purple3")) +
+    scale_fill_manual(values = c("orange", "purple")) +
+    facet_wrap(~species + year) +
+    labs(title = "Average penguin body size per species per year by sex",
+         x="Sex",
+         y ="Body Mass (g)") +
+    theme_dark()
+```
+
+create a plot of average penguin body mass by annual min temp separated by species year and sex
+
+```{r}
+penguins_weather.sums %>%
+  filter(!is.na(sex)) %>%
+  group_by(species, sex, year) %>%
+  summarize(mean.body.mass.g = mean(body_mass_g),
+            mean.min.temp.c = mean(min.temp)) %>% 
+  
+  ggplot(aes(x=mean.min.temp.c, y=mean.body.mass.g, color = sex)) +
+    geom_point() +
+    scale_color_viridis_d() +
+    geom_smooth(method = "lm", se=F) +
+    facet_wrap(~species) +
+    theme_classic() +
+    labs(title="Average penguin body mass by average annual minimium temperature",
+         x="Average minimum temperature (c)",
+         y="Average body mass (g)")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
