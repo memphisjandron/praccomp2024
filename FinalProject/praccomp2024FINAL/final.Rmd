@@ -1,0 +1,256 @@
+```{r}
+# read in raw counts data
+rawcounts <- read.csv("~/praccomp2024/FinalProject/counts.csv")
+
+rawcountsclean <- rawcounts[c(3:length(rownames(rawcounts))),]
+
+rownames(rawcountsclean) <- rawcountsclean[,1]
+
+rawcountsclean <- rawcountsclean[,-1]
+
+library(dplyr)
+
+(rawcountsclean <- rawcountsclean %>% mutate_if(is.character, as.numeric))
+```
+
+```{r}
+conditiontable <- t(rawcounts[c(1,2),])
+
+colnames(conditiontable) <- conditiontable[1,]
+
+conditiontable <- conditiontable[-1,]
+
+conditiontable <- as.data.frame(conditiontable)
+
+conditiontable$`#CLASS:Type` <- as.factor(conditiontable$`#CLASS:Type`)
+
+conditiontable$`#CLASS:Time` <- as.factor(conditiontable$`#CLASS:Time`)
+
+colnames(conditiontable) <- sub("#CLASS:", "", colnames(conditiontable))
+```
+
+```{r}
+conditiontable
+```
+
+
+```{r}
+#if (!require("BiocManager", quietly = TRUE))
+    #install.packages("BiocManager")
+
+#BiocManager::install("DESeq2")
+
+library(DESeq2)
+library(ggplot2)
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = rawcountsclean, colData = conditiontable, design = ~ Type)
+
+dds
+```
+
+```{r}
+dds <- DESeq(dds)
+res <- results(dds)
+res
+```
+
+```{r}
+#if (!require("BiocManager", quietly = TRUE))
+   # install.packages("BiocManager")
+
+#BiocManager::install("apeglm")
+```
+
+```{r}
+resultsNames(dds)
+```
+
+```{r}
+resLFC <- lfcShrink(dds, coef = "Type_Mut_vs_Ctr", type = "apeglm")
+resLFC
+```
+
+```{r}
+(resOrdered <- res[order(res$pvalue),])
+```
+
+```{r}
+sum(res$padj < 0.05, na.rm=TRUE)
+```
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+```{r}
+sum(res05$padj < 0.05, na.rm=TRUE)
+```
+
+```{r}
+plotMA(res, ylim=c(-2,2))
+```
+
+```{r}
+plotMA(resLFC, ylim=c(-2,2))
+idx <- identify(res$baseMean, res$log2FoldChange)
+rownames(res)[idx]
+```
+
+```{r}
+#install.packages("ashr")
+library(ashr)
+resNorm <- lfcShrink(dds, coef=2, type="normal")
+resAsh <- lfcShrink(dds, coef=2, type="ashr")
+```
+
+```{r}
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim <- c(1,1e5); ylim <- c(-3,3)
+plotMA(resLFC, xlim=xlim, ylim=ylim, main="apeglm")
+plotMA(resNorm, xlim=xlim, ylim=ylim, main="normal")
+plotMA(resAsh, xlim=xlim, ylim=ylim, main="ashr")
+```
+
+```{r}
+plotCounts(dds, gene=which.min(res$padj), intgroup="Type")
+```
+
+```{r}
+d <- plotCounts(dds, gene=which.min(res$padj), intgroup="Type", 
+                returnData=TRUE)
+library("ggplot2")
+ggplot(d, aes(x=Type, y=count)) + 
+  geom_point(position=position_jitter(w=0.1,h=0)) + 
+  scale_y_log10(breaks=c(25,100,400))
+```
+
+```{r}
+plotCounts(dds, gene=which.min(res$padj), intgroup="Time")
+```
+
+```{r}
+#install.packages("pheatmap")
+library("pheatmap")
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(dds)[,c("Time","Type")])
+pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=df)
+```
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+rld <- rlog(dds, blind=FALSE)
+head(assay(vsd), 3)
+```
+
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+```
+
+```{r}
+#install.packages("RColorBrewer")
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$Time, vsd$Type, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+```
+
+```{r}
+plotPCA(vsd, intgroup=c("Time", "Type"))
+```
+
+```{r}
+pcaData <- plotPCA(vsd, intgroup=c("Time", "Type"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+ggplot(pcaData, aes(PC1, PC2, color=Time, shape=Type)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+```
+
+```{r}
+par(mar=c(8,5,2,2))
+boxplot(log10(assays(dds)[["cooks"]]), range=0, las=2)
+```
+
+```{r}
+plotDispEsts(dds)
+```
+
+```{r}
+metadata(res)$alpha
+```
+
+```{r}
+metadata(res)$filterThreshold
+```
+
+```{r}
+plot(metadata(res)$filterNumRej, 
+     type="b", ylab="number of rejections",
+     xlab="quantiles of filter")
+lines(metadata(res)$lo.fit, col="red")
+abline(v=metadata(res)$filterTheta)
+```
+
+```{r}
+resNoFilt <- results(dds, independentFiltering=FALSE)
+addmargins(table(filtering=(res$padj < .1),
+                 noFiltering=(resNoFilt$padj < .1)))
+```
+
+```{r}
+par(mfrow=c(2,2),mar=c(2,2,1,1))
+ylim <- c(-2.5,2.5)
+resGA <- results(dds, lfcThreshold=.5, altHypothesis="greaterAbs")
+resLA <- results(dds, lfcThreshold=.5, altHypothesis="lessAbs")
+resG <- results(dds, lfcThreshold=.5, altHypothesis="greater")
+resL <- results(dds, lfcThreshold=.5, altHypothesis="less")
+drawLines <- function() abline(h=c(-.5,.5),col="dodgerblue",lwd=2)
+plotMA(resGA, ylim=ylim); drawLines()
+plotMA(resLA, ylim=ylim); drawLines()
+plotMA(resG, ylim=ylim); drawLines()
+plotMA(resL, ylim=ylim); drawLines()
+```
+
+```{r}
+W <- res$stat
+maxCooks <- apply(assays(dds)[["cooks"]],1,max)
+idx <- !is.na(W)
+plot(rank(W[idx]), maxCooks[idx], xlab="rank of Wald statistic", 
+     ylab="maximum Cook's distance per gene",
+     ylim=c(0,5), cex=.4, col=rgb(0,0,0,.3))
+m <- ncol(dds)
+p <- 3
+abline(h=qf(.99, p, m - p))
+```
+
+```{r}
+use <- res$baseMean > metadata(res)$filterThreshold
+h1 <- hist(res$pvalue[!use], breaks=0:50/50, plot=FALSE)
+h2 <- hist(res$pvalue[use], breaks=0:50/50, plot=FALSE)
+colori <- c(`do not pass`="khaki", `pass`="powderblue")
+```
+
+```{r}
+barplot(height = rbind(h1$counts, h2$counts), beside = FALSE,
+        col = colori, space = 0, main = "", ylab="frequency")
+text(x = c(0, length(h1$counts)), y = 0, label = paste(c(0,1)),
+     adj = c(0.5,1.7), xpd=NA)
+legend("topright", fill=rev(colori), legend=rev(names(colori)))
+```
+
+
+
+
+
